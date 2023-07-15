@@ -1,0 +1,41 @@
+{
+  "name": "chat-gpt",
+  "displayName": "Chat gpt",
+  "version": "0.0.1",
+  "description": "Chat gpt extension",
+  "author": "Mahmood Sagharjooghi",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "test": "plasmo test"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.4",
+    "clsx": "^1.2.1",
+    "cmdk": "^0.2.0",
+    "lodash": "^4.17.21",
+    "plasmo": "0.80.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-textarea-autosize": "^8.5.2",
+    "tailwind-merge": "^1.13.2"
+  },
+  "devDependencies": {
+    "@plasmohq/prettier-plugin-sort-imports": "4.0.1",
+    "@types/chrome": "0.0.241",
+    "@types/node": "20.4.2",
+    "@types/react": "18.2.15",
+    "@types/react-dom": "18.2.7",
+    "postcss": "^8.4.26",
+    "prettier": "3.0.0",
+    "tailwindcss": "^3.3.3",
+    "typescript": "5.1.6"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*/*"
+    ]
+  }
+}
