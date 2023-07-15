@@ -84,7 +84,7 @@ function App() {
     if (message.payload.type !== "background") return
     const { payload } = message.payload
     if (payload.type === "request_status" && payload.status === "complete") {
-      update({ steps: ["Complete"], loop: 1 })
+      update({ steps: ["Complete!"], loop: 1 })
       setLoading(false)
     }
   }, [])
