@@ -1,18 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Command } from "cmdk"
-import Route from "~modules/cmdk/modules/navigation/components/Route"
+import Mousetrap from "mousetrap"
+
 import { PAGES } from "~modules/cmdk/modules/navigation/context"
-import Home from "~modules/cmdk/pages/Home"
-import NewPrompt from "~modules/cmdk/pages/NewPrompt"
 import useInput from "~modules/cmdk/modules/input/useInput"
 import { useNavigation } from "~modules/cmdk/modules/navigation/useNavigation"
-import { MessageTypeFactory } from "~types"
+import type { MessageTypeFactory } from "~types"
 import { PORT_NAME } from "~/port-name"
 
-import { Command, CommandInput, CommandSeparator } from "~/modules/cmdk/command"
+import {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandSeparator
+} from "~/modules/cmdk/command"
+import Route from "~modules/cmdk/modules/navigation/components/Route"
+import Home from "~modules/cmdk/pages/Home"
+import NewPrompt from "~modules/cmdk/pages/NewPrompt"
 
 type Message = MessageTypeFactory<"cmdk">
 type IncomingMessage = MessageTypeFactory<"chat_gpt_window">
+
+const hotKeys = ["meta+shift+l"]
 
 function App() {
   const ref = useRef<HTMLDivElement | null>(null)
@@ -20,9 +28,18 @@ function App() {
   const resultContainerRef = useRef<HTMLDivElement | null>(null)
 
   const [inputValue, setInputValue] = useState("linear")
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const inputRef = useInput()
   const { pop, activePage } = useNavigation()
+
+  const toggleModal = () => {
+    setIsModalOpen((c) => !c)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
 
   function bounce() {
     if (ref.current) {
@@ -62,6 +79,10 @@ function App() {
           bounce()
           onEnterHandler()
         }
+      }
+
+      if (e.key === "Escape" || (e.key === "l" && e.metaKey && e.shiftKey)) {
+        handleCloseModal()
       }
 
       if (activePage === PAGES.HOME || inputValue.length) {
@@ -117,12 +138,27 @@ function App() {
     })
   }, [])
 
+  useEffect(() => {
+    Mousetrap.bind(hotKeys, () => {
+      toggleModal()
+    })
+
+    Mousetrap.bind("esc", handleCloseModal)
+
+    return () => {
+      Mousetrap.unbind(hotKeys)
+      Mousetrap.unbind("esc")
+    }
+  }, [])
+
+  if (!isModalOpen) return null
+
   return (
     <div className="raycast dark fixed top-64 left-1/2 -translate-x-1/2 z-50">
       <Command
         ref={ref}
         onKeyDown={inputKeyDownHandler}
-        className="rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[800px] overflow-y-auto text-sm">
+        className="rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[800px] overflow-hidden text-sm">
         <CommandInput
           ref={inputRef}
           onValueChange={(value) => setInputValue(value)}
