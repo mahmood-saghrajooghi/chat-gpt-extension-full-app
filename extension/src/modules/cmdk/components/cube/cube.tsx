@@ -56,6 +56,8 @@ export const AnimatedCube: React.FC<
       }
       if (!shouldAnimate) {
         ref.current.style.setProperty("--animationIterationCount", "1")
+      } else {
+        ref.current.style.setProperty("--animationIterationCount", "infinite")
       }
       if (borderWidth) {
         ref.current.style.setProperty("--borderWidth", `${borderWidth}px`)

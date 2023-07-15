@@ -1,6 +1,6 @@
 type MessageSource = 'cmdk' | 'chat_gpt_window' | 'background';
 type RequestStatus = 'loading' | 'complete';
-type ChatGPTTabStatus = 'active' | 'not_active';
+export type ChatGPTTabStatus = 'active' | 'not_active';
 interface Payload extends Record<MessageSource, any> {
   cmdk: {
     type: 'send_chat_message';

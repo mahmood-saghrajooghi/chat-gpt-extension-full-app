@@ -31,7 +31,7 @@ export function NavigationProvider({
     setPages((pages) => {
       const x = [...pages];
       x.splice(-1, 1);
-      return x;
+      return x.length ? x : [PAGES.NEW_PROMPT];
     });
   }, []);
 

@@ -4,7 +4,11 @@ import Mousetrap from "mousetrap"
 import { PAGES } from "~modules/cmdk/modules/navigation/context"
 import useInput from "~modules/cmdk/modules/input/useInput"
 import { useNavigation } from "~modules/cmdk/modules/navigation/useNavigation"
-import type { MessageTypeFactory, Message as GenericMessage } from "~types"
+import type {
+  MessageTypeFactory,
+  Message as GenericMessage,
+  ChatGPTTabStatus
+} from "~types"
 import { PORT_NAME } from "~/port-name"
 
 import {
@@ -17,31 +21,31 @@ import Route from "~modules/cmdk/modules/navigation/components/Route"
 import Home from "~modules/cmdk/pages/Home"
 import NewPrompt from "~modules/cmdk/pages/NewPrompt"
 import { AnimatedCube } from "./components/cube/cube"
-import { useTypical } from "./components/typical"
+import Typical from "./components/typical"
 import type { ThemeColor } from "./components/Cube/ThemeTypes"
 
 type Message = MessageTypeFactory<"cmdk">
 type IncomingMessage = MessageTypeFactory<"chat_gpt_window">
 
+type AppStatus =
+  | `chat_gpt_tab_${ChatGPTTabStatus}`
+  | "loading"
+  | "response_complete"
+
 const hotKeys = ["meta+shift+l"]
 
-function getCubeColor(
-  isChatGPTTabActive: boolean,
-  loading: boolean
-): ThemeColor {
-  if (!isChatGPTTabActive) {
-    return "red"
-  }
+const cubeColor: Record<AppStatus, ThemeColor> = {
+  chat_gpt_tab_not_active: "red",
+  chat_gpt_tab_active: "green",
+  loading: "primary",
+  response_complete: "blue"
+}
 
-  if (loading) {
-    return "primary"
-  }
-
-  if (isChatGPTTabActive) {
-    return "green"
-  }
-
-  return "blue"
+const appStatusText: Record<AppStatus, string> = {
+  chat_gpt_tab_not_active: "ChatGPT tab not active",
+  chat_gpt_tab_active: "Ready!",
+  loading: "Pending...",
+  response_complete: "Complete!"
 }
 
 function App() {
@@ -49,12 +53,12 @@ function App() {
   const portRef = useRef<chrome.runtime.Port | null>(null)
   const resultContainerRef = useRef<HTMLDivElement | null>(null)
   const pendingTextRef = useRef<HTMLDivElement | null>(null)
-  const { update } = useTypical(pendingTextRef)
 
   const [inputValue, setInputValue] = useState("linear")
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [isChatGPTTabActive, setIsChatGPTTabActive] = useState(false)
+  const [appStatus, setAppStatus] = useState<AppStatus>(
+    "chat_gpt_tab_not_active"
+  )
 
   const inputRef = useInput()
   const { pop, activePage } = useNavigation()
@@ -75,8 +79,6 @@ function App() {
           ref.current.style.transform = ""
         }
       }, 100)
-
-      setInputValue("")
     }
   }
 
@@ -84,8 +86,7 @@ function App() {
     if (message.payload.type !== "background") return
     const { payload } = message.payload
     if (payload.type === "request_status" && payload.status === "complete") {
-      update({ steps: ["Complete!"], loop: 1 })
-      setLoading(false)
+      setAppStatus("response_complete")
     }
   }, [])
 
@@ -93,12 +94,15 @@ function App() {
     if (message.payload.type !== "background") return
     const { payload } = message.payload
     if (payload.type === "chat_gpt_tab_status") {
-      setIsChatGPTTabActive(payload.status === "active")
+      if (payload.status === "active") {
+        setAppStatus("chat_gpt_tab_active")
+      } else {
+        setAppStatus("chat_gpt_tab_not_active")
+      }
     }
   }, [])
 
   const onEnterHandler = useCallback(() => {
-    update({ steps: ["Pending..."], loop: 1 })
     if (activePage === PAGES.NEW_PROMPT) {
       const message: Message = {
         source: "cmdk",
@@ -110,7 +114,7 @@ function App() {
         }
       }
 
-      setLoading(true)
+      setAppStatus("loading")
       portRef.current?.postMessage(message)
       return
     }
@@ -120,6 +124,8 @@ function App() {
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
         if (!e.shiftKey) {
+          console.log("here 0");
+
           bounce()
           onEnterHandler()
         }
@@ -133,10 +139,11 @@ function App() {
         return
       }
 
-      if (
-        (e.key === "Backspace" && inputValue.length === 0) ||
-        (e.key === "Backspace" && e.metaKey)
-      ) {
+      if (e.key === "Backspace" && inputValue.length === 0) {
+        console.log("here");
+        console.log({ activePage, inputValue });
+
+
         e.preventDefault()
         pop()
         bounce()
@@ -221,17 +228,15 @@ function App() {
           component={NewPrompt}
           ref={resultContainerRef}
         />
-        <div className="flex items-center pt-2 pb-2 px-2 border border-t border-zinc-800">
+        <div className="flex shrink-0 items-center h-[37px] px-2 border border-t border-gray-700">
           <div className="-mt-[4px]">
             <AnimatedCube
-              theme={getCubeColor(isChatGPTTabActive, loading)}
+              theme={cubeColor[appStatus]}
               cubeSize={10}
-              shouldAnimate={loading}
+              shouldAnimate={appStatus === "loading"}
             />
           </div>
-          <div className="ml-3" ref={pendingTextRef}>
-            {isChatGPTTabActive ? "Ready" : "ChatGPT tab not active"}
-          </div>
+          <Typical className="ml-3">{appStatusText[appStatus]}</Typical>
         </div>
       </Command>
     </div>

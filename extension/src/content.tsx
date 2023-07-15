@@ -1,6 +1,6 @@
 import cssText from "data-text:~style.css"
 import stylesText from "data-text:~modules/cmdk/cmdk-compiled.css"
-import cubeStylesText from 'data-text:~modules/cmdk/components/cube.css'
+import cubeStylesText from 'data-text:~modules/cmdk/components/cube/cube.css'
 
 import type { PlasmoCSConfig } from "plasmo"
 

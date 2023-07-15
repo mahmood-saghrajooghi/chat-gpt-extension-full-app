@@ -47,6 +47,10 @@
   --blue12: hsl(206, 98%, 95.8%);
 }
 
+.raycast * {
+  box-sizing: border-box;
+}
+
 .chatgpt-response-container {
   p {
     @apply mb-4;
