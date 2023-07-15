@@ -5,7 +5,7 @@ const NewPrompt = forwardRef<HTMLDivElement>((_, ref) => {
     <div
       id="result-container"
       className="chatgpt-response-container text-sm overflow-y-auto overflow-x-hidden"
-      ref={ref}></div>
+      ref={ref} />
   )
 })
 

@@ -1,5 +1,6 @@
 import cssText from "data-text:~style.css"
 import stylesText from "data-text:~modules/cmdk/cmdk-compiled.css"
+import cubeStylesText from 'data-text:~modules/cmdk/components/cube.css'
 
 import type { PlasmoCSConfig } from "plasmo"
 
@@ -14,13 +15,13 @@ export const config: PlasmoCSConfig = {
 
 export const getStyle = () => {
   const style = document.createElement("style")
-  style.textContent = cssText + stylesText;
+  style.textContent = cssText + stylesText + cubeStylesText;
   return style
 }
 
 const PlasmoOverlay = () => {
   if (window.location.hostname === "chat.openai.com") {
-    return <ChatGPT />
+    return <ChatGPT />;
   }
   return <Cmdk />;
 }

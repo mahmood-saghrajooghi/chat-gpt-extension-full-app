@@ -86,6 +86,10 @@
 .chatgpt-response-container pre {
   padding: 0px;
 }
+.chatgpt-response-container pre {
+  border-radius: 0.375rem;
+}
+
 .chatgpt-response-container pre > div {
   margin-bottom: 0px;
 }

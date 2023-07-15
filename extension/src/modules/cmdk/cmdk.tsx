@@ -4,7 +4,7 @@ import Mousetrap from "mousetrap"
 import { PAGES } from "~modules/cmdk/modules/navigation/context"
 import useInput from "~modules/cmdk/modules/input/useInput"
 import { useNavigation } from "~modules/cmdk/modules/navigation/useNavigation"
-import type { MessageTypeFactory } from "~types"
+import type { MessageTypeFactory, Message as GenericMessage } from "~types"
 import { PORT_NAME } from "~/port-name"
 
 import {
@@ -16,19 +16,45 @@ import {
 import Route from "~modules/cmdk/modules/navigation/components/Route"
 import Home from "~modules/cmdk/pages/Home"
 import NewPrompt from "~modules/cmdk/pages/NewPrompt"
+import { AnimatedCube } from "./components/cube/cube"
+import { useTypical } from "./components/typical"
+import type { ThemeColor } from "./components/Cube/ThemeTypes"
 
 type Message = MessageTypeFactory<"cmdk">
 type IncomingMessage = MessageTypeFactory<"chat_gpt_window">
 
 const hotKeys = ["meta+shift+l"]
 
+function getCubeColor(
+  isChatGPTTabActive: boolean,
+  loading: boolean
+): ThemeColor {
+  if (!isChatGPTTabActive) {
+    return "red"
+  }
+
+  if (loading) {
+    return "primary"
+  }
+
+  if (isChatGPTTabActive) {
+    return "green"
+  }
+
+  return "blue"
+}
+
 function App() {
   const ref = useRef<HTMLDivElement | null>(null)
   const portRef = useRef<chrome.runtime.Port | null>(null)
   const resultContainerRef = useRef<HTMLDivElement | null>(null)
+  const pendingTextRef = useRef<HTMLDivElement | null>(null)
+  const { update } = useTypical(pendingTextRef)
 
   const [inputValue, setInputValue] = useState("linear")
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [isChatGPTTabActive, setIsChatGPTTabActive] = useState(false)
 
   const inputRef = useInput()
   const { pop, activePage } = useNavigation()
@@ -54,7 +80,25 @@ function App() {
     }
   }
 
+  const handleMessageComplete = useCallback((message: GenericMessage) => {
+    if (message.payload.type !== "background") return
+    const { payload } = message.payload
+    if (payload.type === "request_status" && payload.status === "complete") {
+      update({ steps: ["Complete"], loop: 1 })
+      setLoading(false)
+    }
+  }, [])
+
+  const handleChatGPTTabStatus = useCallback((message: GenericMessage) => {
+    if (message.payload.type !== "background") return
+    const { payload } = message.payload
+    if (payload.type === "chat_gpt_tab_status") {
+      setIsChatGPTTabActive(payload.status === "active")
+    }
+  }, [])
+
   const onEnterHandler = useCallback(() => {
+    update({ steps: ["Pending..."], loop: 1 })
     if (activePage === PAGES.NEW_PROMPT) {
       const message: Message = {
         source: "cmdk",
@@ -65,8 +109,8 @@ function App() {
           }
         }
       }
-      console.log("🔥", message)
 
+      setLoading(true)
       portRef.current?.postMessage(message)
       return
     }
@@ -95,7 +139,6 @@ function App() {
       ) {
         e.preventDefault()
         pop()
-        console.log("about to bounce")
         bounce()
       }
     },
@@ -113,13 +156,14 @@ function App() {
     }
     portRef.current.postMessage(message)
 
-    portRef.current.onMessage.addListener(function (msg: IncomingMessage) {
+    portRef.current.onMessage.addListener(function (msg: GenericMessage) {
       // console.log({ msg });
+
+      handleMessageComplete(msg)
+      handleChatGPTTabStatus(msg)
 
       if (msg.source !== "chat_gpt_window") return
       if (msg.payload.type !== "chat_gpt_response") return
-
-      console.log({ resultContainerRef })
 
       if (!resultContainerRef.current) return
 
@@ -158,22 +202,37 @@ function App() {
       <Command
         ref={ref}
         onKeyDown={inputKeyDownHandler}
-        className="rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[800px] overflow-hidden text-sm">
+        className="relative rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[800px] overflow-hidden text-sm">
         <CommandInput
           ref={inputRef}
           onValueChange={(value) => setInputValue(value)}
           autoFocus
           className="overflow-y-auto overflow-x-hidden"
           maxRows={10}
-          placeholder="Send a message..."
-        />
-        <CommandSeparator />
+          placeholder="">
+          {/* {loading && ( */}
+          {/* )} */}
+        </CommandInput>
+        {/* <CommandSeparator /> */}
+
         <Route page={PAGES.HOME} component={Home} />
         <Route
           page={PAGES.NEW_PROMPT}
           component={NewPrompt}
           ref={resultContainerRef}
         />
+        <div className="flex items-center pt-2 pb-2 px-2 border border-t border-zinc-800">
+          <div className="-mt-[4px]">
+            <AnimatedCube
+              theme={getCubeColor(isChatGPTTabActive, loading)}
+              cubeSize={10}
+              shouldAnimate={loading}
+            />
+          </div>
+          <div className="ml-3" ref={pendingTextRef}>
+            {isChatGPTTabActive ? "Ready" : "ChatGPT tab not active"}
+          </div>
+        </div>
       </Command>
     </div>
   )

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react"
 import chatgpt from "~modules/chatgpt/chatgpt"
 import { MessageTypeFactory } from "~types"
 import throttle from "lodash/throttle"
+import debounce from "lodash/debounce"
 
 type Message = MessageTypeFactory<"chat_gpt_window">
 type IncomingMessage = MessageTypeFactory<"cmdk">
@@ -13,6 +14,15 @@ export default function ChatGPT() {
 
   useEffect(() => {
     portRef.current = chrome.runtime.connect({ name: PORT_NAME })
+
+    window.addEventListener('beforeunload', function() {
+      portRef.current?.postMessage({
+        source: "chat_gpt_window",
+        payload: {
+          type: "unregister_chat_gpt_tab"
+        }
+      } satisfies Message)
+    });
 
     // register chat gpt tab
     portRef.current.postMessage({
