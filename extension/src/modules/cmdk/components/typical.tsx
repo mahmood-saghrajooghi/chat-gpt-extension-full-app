@@ -49,7 +49,6 @@ function getOverlap(start, [...end]) {
 }
 
 async function type(node, ...args) {
-  console.log("type", node, args);
   for (const arg of args) {
     switch (typeof arg) {
       case "string":
@@ -98,7 +97,6 @@ export default function Typical({
   const { update } = useTypical(ref)
 
   useEffect(() => {
-    console.log("children", children);
     update({ steps: [children], loop: 1 })
   }, [children])
 
