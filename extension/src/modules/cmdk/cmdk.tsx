@@ -209,16 +209,16 @@ function App() {
   if (!isModalOpen) return null
 
   return (
-    <div className="raycast dark fixed top-64 left-1/2 -translate-x-1/2 z-50">
+    <div className="raycast dark fixed top-[15vh] left-1/2 -translate-x-1/2 z-50">
       <Command
         ref={ref}
         onKeyDown={inputKeyDownHandler}
-        className="relative rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[800px] overflow-hidden text-sm">
+        className="relative rounded-lg border shadow-md bg-neutral-950 text-gray-300 w-[640px] max-h-[75vh] overflow-hidden text-sm">
         <CommandInput
           ref={inputRef}
           onValueChange={(value) => setInputValue(value)}
           autoFocus
-          className="overflow-y-auto overflow-x-hidden"
+          className="overflow-y-auto shrink-0 overflow-x-hidden"
           maxRows={10}
           placeholder="">
           {/* {loading && ( */}
