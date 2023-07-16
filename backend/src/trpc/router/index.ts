@@ -1,13 +1,11 @@
 import { router } from '..';
 
-import { batchRouter } from './batchRouter';
+import { ChatGPTRouter } from './chatGPTRouter';
 import { userRouter } from './userRouter';
-import { utilRouter } from './utilRouter';
 
 export const appRouter = router({
-  batch: batchRouter,
   user: userRouter,
-  util: utilRouter,
+  chat: ChatGPTRouter,
 });
 
 export type AppRouter = typeof appRouter;
