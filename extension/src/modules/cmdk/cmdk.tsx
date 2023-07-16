@@ -87,6 +87,10 @@ function App() {
     const { payload } = message.payload
     if (payload.type === "request_status" && payload.status === "complete") {
       setAppStatus("response_complete")
+
+      setTimeout(() => {
+        setAppStatus("chat_gpt_tab_active")
+      }, 2000)
     }
   }, [])
 
