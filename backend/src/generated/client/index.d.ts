@@ -40,6 +40,7 @@ export type ConversationPayload<ExtArgs extends $Extensions.Args = $Extensions.D
   scalars: $Extensions.GetResult<{
     id: string
     userId: string | null
+    chatGTPConversationId: string | null
     createdAt: Date
     title: string | null
   }, ExtArgs["result"]["conversation"]>
@@ -2159,6 +2160,7 @@ export namespace Prisma {
   export type ConversationMinAggregateOutputType = {
     id: string | null
     userId: string | null
+    chatGTPConversationId: string | null
     createdAt: Date | null
     title: string | null
   }
@@ -2166,6 +2168,7 @@ export namespace Prisma {
   export type ConversationMaxAggregateOutputType = {
     id: string | null
     userId: string | null
+    chatGTPConversationId: string | null
     createdAt: Date | null
     title: string | null
   }
@@ -2173,6 +2176,7 @@ export namespace Prisma {
   export type ConversationCountAggregateOutputType = {
     id: number
     userId: number
+    chatGTPConversationId: number
     createdAt: number
     title: number
     _all: number
@@ -2182,6 +2186,7 @@ export namespace Prisma {
   export type ConversationMinAggregateInputType = {
     id?: true
     userId?: true
+    chatGTPConversationId?: true
     createdAt?: true
     title?: true
   }
@@ -2189,6 +2194,7 @@ export namespace Prisma {
   export type ConversationMaxAggregateInputType = {
     id?: true
     userId?: true
+    chatGTPConversationId?: true
     createdAt?: true
     title?: true
   }
@@ -2196,6 +2202,7 @@ export namespace Prisma {
   export type ConversationCountAggregateInputType = {
     id?: true
     userId?: true
+    chatGTPConversationId?: true
     createdAt?: true
     title?: true
     _all?: true
@@ -2277,6 +2284,7 @@ export namespace Prisma {
   export type ConversationGroupByOutputType = {
     id: string
     userId: string | null
+    chatGTPConversationId: string | null
     createdAt: Date
     title: string | null
     _count: ConversationCountAggregateOutputType | null
@@ -2301,6 +2309,7 @@ export namespace Prisma {
   export type ConversationSelect<ExtArgs extends $Extensions.Args = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    chatGTPConversationId?: boolean
     createdAt?: boolean
     title?: boolean
     User?: boolean | Conversation$UserArgs<ExtArgs>
@@ -2311,6 +2320,7 @@ export namespace Prisma {
   export type ConversationSelectScalar = {
     id?: boolean
     userId?: boolean
+    chatGTPConversationId?: boolean
     createdAt?: boolean
     title?: boolean
   }
@@ -2756,6 +2766,7 @@ export namespace Prisma {
   interface ConversationFieldRefs {
     readonly id: FieldRef<"Conversation", 'String'>
     readonly userId: FieldRef<"Conversation", 'String'>
+    readonly chatGTPConversationId: FieldRef<"Conversation", 'String'>
     readonly createdAt: FieldRef<"Conversation", 'DateTime'>
     readonly title: FieldRef<"Conversation", 'String'>
   }
@@ -4198,6 +4209,7 @@ export namespace Prisma {
   export const ConversationScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    chatGTPConversationId: 'chatGTPConversationId',
     createdAt: 'createdAt',
     title: 'title'
   };
@@ -4339,6 +4351,7 @@ export namespace Prisma {
     NOT?: ConversationWhereInput | ConversationWhereInput[]
     id?: StringFilter<"Conversation"> | string
     userId?: StringNullableFilter<"Conversation"> | string | null
+    chatGTPConversationId?: StringNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     title?: StringNullableFilter<"Conversation"> | string | null
     User?: XOR<UserNullableRelationFilter, UserWhereInput> | null
@@ -4348,6 +4361,7 @@ export namespace Prisma {
   export type ConversationOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
+    chatGTPConversationId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
     User?: UserOrderByWithRelationInput
@@ -4356,6 +4370,7 @@ export namespace Prisma {
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    chatGTPConversationId?: string
     AND?: ConversationWhereInput | ConversationWhereInput[]
     OR?: ConversationWhereInput[]
     NOT?: ConversationWhereInput | ConversationWhereInput[]
@@ -4364,11 +4379,12 @@ export namespace Prisma {
     title?: StringNullableFilter<"Conversation"> | string | null
     User?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     messages?: MessageListRelationFilter
-  }, "id">
+  }, "id" | "chatGTPConversationId">
 
   export type ConversationOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
+    chatGTPConversationId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
     _count?: ConversationCountOrderByAggregateInput
@@ -4382,6 +4398,7 @@ export namespace Prisma {
     NOT?: ConversationScalarWhereWithAggregatesInput | ConversationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Conversation"> | string
     userId?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
+    chatGTPConversationId?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     title?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
   }
@@ -4503,6 +4520,7 @@ export namespace Prisma {
 
   export type ConversationCreateInput = {
     id?: string
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
     User?: UserCreateNestedOneWithoutConversationsInput
@@ -4512,12 +4530,14 @@ export namespace Prisma {
   export type ConversationUncheckedCreateInput = {
     id?: string
     userId?: string | null
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUpdateInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     User?: UserUpdateOneWithoutConversationsNestedInput
@@ -4526,6 +4546,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedUpdateInput = {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
@@ -4534,17 +4555,20 @@ export namespace Prisma {
   export type ConversationCreateManyInput = {
     id?: string
     userId?: string | null
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
   }
 
   export type ConversationUpdateManyMutationInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConversationUncheckedUpdateManyInput = {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -4752,6 +4776,7 @@ export namespace Prisma {
   export type ConversationCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    chatGTPConversationId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
   }
@@ -4759,6 +4784,7 @@ export namespace Prisma {
   export type ConversationMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    chatGTPConversationId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
   }
@@ -4766,6 +4792,7 @@ export namespace Prisma {
   export type ConversationMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    chatGTPConversationId?: SortOrder
     createdAt?: SortOrder
     title?: SortOrder
   }
@@ -5106,6 +5133,7 @@ export namespace Prisma {
 
   export type ConversationCreateWithoutUserInput = {
     id?: string
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
     messages?: MessageCreateNestedManyWithoutConversationInput
@@ -5113,6 +5141,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedCreateWithoutUserInput = {
     id?: string
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
     messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
@@ -5149,6 +5178,7 @@ export namespace Prisma {
     NOT?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
     id?: StringFilter<"Conversation"> | string
     userId?: StringNullableFilter<"Conversation"> | string | null
+    chatGTPConversationId?: StringNullableFilter<"Conversation"> | string | null
     createdAt?: DateTimeFilter<"Conversation"> | Date | string
     title?: StringNullableFilter<"Conversation"> | string | null
   }
@@ -5252,6 +5282,7 @@ export namespace Prisma {
 
   export type ConversationCreateWithoutMessagesInput = {
     id?: string
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
     User?: UserCreateNestedOneWithoutConversationsInput
@@ -5260,6 +5291,7 @@ export namespace Prisma {
   export type ConversationUncheckedCreateWithoutMessagesInput = {
     id?: string
     userId?: string | null
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
   }
@@ -5331,6 +5363,7 @@ export namespace Prisma {
   }
 
   export type ConversationUpdateWithoutMessagesInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     User?: UserUpdateOneWithoutConversationsNestedInput
@@ -5338,6 +5371,7 @@ export namespace Prisma {
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
     userId?: NullableStringFieldUpdateOperationsInput | string | null
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -5387,23 +5421,27 @@ export namespace Prisma {
 
   export type ConversationCreateManyUserInput = {
     id?: string
+    chatGTPConversationId?: string | null
     createdAt?: Date | string
     title?: string | null
   }
 
   export type ConversationUpdateWithoutUserInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutUserInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
     messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutUserInput = {
+    chatGTPConversationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     title?: NullableStringFieldUpdateOperationsInput | string | null
   }

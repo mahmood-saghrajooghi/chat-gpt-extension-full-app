@@ -23,6 +23,7 @@ import NewPrompt from "~modules/cmdk/pages/NewPrompt"
 import { AnimatedCube } from "./components/cube/cube"
 import Typical from "./components/typical"
 import type { ThemeColor } from "./components/Cube/ThemeTypes"
+import trpc from "~lib/trpc"
 
 type Message = MessageTypeFactory<"cmdk">
 type IncomingMessage = MessageTypeFactory<"chat_gpt_window">
@@ -52,7 +53,10 @@ function App() {
   const ref = useRef<HTMLDivElement | null>(null)
   const portRef = useRef<chrome.runtime.Port | null>(null)
   const resultContainerRef = useRef<HTMLDivElement | null>(null)
-  const pendingTextRef = useRef<HTMLDivElement | null>(null)
+
+  const user = trpc.user.show.useQuery("64b41f7351551302654cf4a7")
+
+  const sendMessageMutation = trpc.chat.sendMessage.useMutation()
 
   const [inputValue, setInputValue] = useState("linear")
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -106,14 +110,18 @@ function App() {
     }
   }, [])
 
-  const onEnterHandler = useCallback(() => {
+  const onEnterHandler = useCallback(async () => {
     if (activePage === PAGES.NEW_PROMPT) {
+      const res = await sendMessageMutation.mutateAsync({
+        content: inputValue,
+      });
       const message: Message = {
         source: "cmdk",
         payload: {
           type: "send_chat_message",
           payload: {
-            message: inputValue
+            message: inputValue,
+            messageId: res.id,
           }
         }
       }
@@ -128,8 +136,6 @@ function App() {
     (e: React.KeyboardEvent) => {
       if (e.key === "Enter") {
         if (!e.shiftKey) {
-          console.log("here 0");
-
           bounce()
           onEnterHandler()
         }
@@ -144,10 +150,6 @@ function App() {
       }
 
       if (e.key === "Backspace" && inputValue.length === 0) {
-        console.log("here");
-        console.log({ activePage, inputValue });
-
-
         e.preventDefault()
         pop()
         bounce()
@@ -168,8 +170,6 @@ function App() {
     portRef.current.postMessage(message)
 
     portRef.current.onMessage.addListener(function (msg: GenericMessage) {
-      // console.log({ msg });
-
       handleMessageComplete(msg)
       handleChatGPTTabStatus(msg)
 
@@ -179,7 +179,6 @@ function App() {
       if (!resultContainerRef.current) return
 
       if (msg.payload.payload.response_type === "html") {
-        console.log("here")
         resultContainerRef.current.innerHTML = `<div class="p-3">${msg.payload.payload.html}</div>`
       }
 

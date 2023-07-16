@@ -18,12 +18,13 @@ model User {
 }
 
 model Conversation {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String?   @db.ObjectId
-  createdAt DateTime  @default(now())
-  title     String?
-  User      User?     @relation(fields: [userId], references: [id])
-  messages  Message[]
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String?   @db.ObjectId
+  chatGTPConversationId String?   @unique
+  createdAt             DateTime  @default(now())
+  title                 String?
+  User                  User?     @relation(fields: [userId], references: [id])
+  messages              Message[]
 }
 
 model Message {

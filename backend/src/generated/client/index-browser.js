@@ -108,6 +108,7 @@ exports.Prisma.UserScalarFieldEnum = {
 exports.Prisma.ConversationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  chatGTPConversationId: 'chatGTPConversationId',
   createdAt: 'createdAt',
   title: 'title'
 };

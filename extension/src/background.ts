@@ -16,8 +16,6 @@ chrome.runtime.onConnect.addListener(function (port) {
       return
     }
 
-    console.log("🔥", msg)
-
     switch (msg.source) {
       case "cmdk":
         if (msg.payload.type === "register_cmdk_tab") {
@@ -46,8 +44,6 @@ chrome.runtime.onConnect.addListener(function (port) {
         }
         break
       case "chat_gpt_window":
-        console.log("🌊", msg)
-
         if (msg.payload.type === "register_chat_gpt_tab") {
           chatGPTPort = port
           chatGPTTabId = port.sender?.tab?.id
@@ -75,6 +71,7 @@ chrome.runtime.onConnect.addListener(function (port) {
                 }
               }
               cmdkPort?.postMessage(message)
+              chatGPTPort?.postMessage(message)
             },
             { urls: ["https://chat.openai.com/backend-api/conversation"] }
           )
@@ -104,6 +101,7 @@ chrome.runtime.onConnect.addListener(function (port) {
             return
           }
         }
+
         break
     }
   })

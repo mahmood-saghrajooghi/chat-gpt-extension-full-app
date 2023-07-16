@@ -9,10 +9,47 @@ import { router, publicProcedure } from '..';
 const ee = new EventEmitter();
 
 export const ChatGPTRouter = router({
-  list: publicProcedure.query(async () => {
-    const users = await prisma.user.findMany();
-    return users;
-  }),
+  listConversations: publicProcedure
+    .input(z.object({ userId: z.string().min(1) }))
+    .query(async ({ input: { userId } }) => {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const conversations = await prisma.conversation.findMany({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      return conversations;
+    }),
+
+  createOrUpdateConversation: publicProcedure
+    .input(
+      z.object({
+        conversationId: z.string().min(1),
+        userId: z.string().min(1),
+        title: z.string().min(1).optional(),
+      }),
+    )
+    .mutation(async ({ input: { conversationId, userId, title } }) => {
+      const conversation = await prisma.conversation.upsert({
+        where: { chatGTPConversationId: conversationId },
+        create: {
+          chatGTPConversationId: conversationId,
+          // title,
+          userId,
+        },
+        update: {
+          // title,
+          userId,
+        },
+      });
+      return conversation;
+    }),
 
   show: publicProcedure.input(z.string().min(1)).query(async ({ input: userId }) => {
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -58,7 +95,8 @@ export const ChatGPTRouter = router({
   }),
 
   sendMessage: publicProcedure
-    .input(z.object({ content: z.string().min(1), conversationId: z.string().min(1) }))
+    .input(z.object({ content: z.string(), conversationId: z.string() }))
+    .output(z.object({ id: z.string() }))
     .mutation(async ({ input: { content, conversationId } }) => {
       const result = await prisma.message.create({
         data: {
@@ -86,6 +124,7 @@ export const ChatGPTRouter = router({
   messageResponse: publicProcedure
     .input(z.object({ response: z.string().min(1), messageId: z.string().min(1) }))
     .mutation(async ({ input: { response, messageId } }) => {
+      console.log('we are here 🔥');
       const result = await prisma.message.update({
         where: {
           id: messageId,
@@ -96,6 +135,21 @@ export const ChatGPTRouter = router({
       });
 
       ee.emit('sendMessage', result);
+
+      return result;
+    }),
+
+  updateMessageConversationId: publicProcedure
+    .input(z.object({ id: z.string().min(1), conversationId: z.string().min(1) }))
+    .mutation(async ({ input: { id, conversationId } }) => {
+      const result = await prisma.message.update({
+        where: {
+          id,
+        },
+        data: {
+          conversationId,
+        },
+      });
 
       return result;
     }),

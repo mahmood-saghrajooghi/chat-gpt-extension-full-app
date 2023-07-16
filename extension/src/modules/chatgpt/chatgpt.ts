@@ -337,6 +337,10 @@ const chatgpt = {
         return ip;
     },
 
+    getSidebarChatLinksContainer: function() {
+        return document.querySelector('.flex.flex-col.gap-2.pb-2.text-gray-100.text-sm');
+    },
+
     get: function(targetType, targetName = '') {
 
         // Validate argument types to be string only

@@ -25,6 +25,7 @@ export const userRouter = router({
   create: publicProcedure
     .input(z.object({ email: z.string().email(), name: z.string().min(1) }))
     .mutation(async ({ input: { email, name } }) => {
+      console.log('create user', email, name);
       const newUser = await prisma.user.create({
         data: {
           email,
