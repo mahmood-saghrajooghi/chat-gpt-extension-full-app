@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  trpc-server:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run dev
+    depends_on:
+      - mongo-db
+    environment:
+      - PORT=8080
+      - MONGO_DB_URI=mongodb://mongo-db:27017/chat-gpt-extension
+
+  mongo-db:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:

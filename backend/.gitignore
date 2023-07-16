@@ -1,0 +1,13 @@
+node_modules
+coverage
+build
+compiled
+
+.DS_Store
+*.log
+.vscode
+.idea
+
+npm-debug.log*
+
+*.env
